@@ -1,0 +1,50 @@
+---
+- name: Initial bootstrap
+  hosts: all
+
+  vars:
+    disktype: sd
+    base_packages:
+      - htop
+      - aptitude
+      # - bind9-utils
+      # - dnsutils
+      - apache2
+      # - libapache2-mod-php7.4
+      # - php7.4-cli
+      # - php7.4-curl
+      # - php7.4-gd
+      # - php7.4-json
+      # - php7.4-mbstring
+      # - php7.4-mysql
+      # - php7.4-xml
+      - composer
+      - prometheus
+      - python3-pymysql
+      - mariadb-client
+      - rrdtool
+      - npm
+  tasks:
+    # - name: Make www filesystem
+    #   community.general.filesystem:
+    #     fstype: ext4
+    #     dev: "/dev/{{disktype}}b"
+    #     opts: "-L app-www"
+    # - name: Create www mountpoint
+    #   ansible.builtin.file:
+    #     path: "/srv"
+    #     state: directory
+    #     mode: '0755'
+
+    # - name: Mount www disk
+    #   ansible.posix.mount:
+    #     path: "/srv"
+    #     src: "LABEL=app-www"
+    #     fstype: ext4
+    #     state: mounted
+
+    - name: Install packages
+      apt:
+        update_cache: yes
+        name: "{{ base_packages }}"
+      notify: Restart apache2
