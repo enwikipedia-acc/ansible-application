@@ -24,6 +24,7 @@
       - rrdtool
       - npm
       - rabbitmq-server
+      - crontab
   tasks:
 
     - name: Install packages
