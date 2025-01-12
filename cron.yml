@@ -1,0 +1,34 @@
+---
+- name: "Cron: nightly cleanup"
+  ansible.builtin.cron:
+    name: Nightly cleanup
+    minute: "0"
+    hour: "0"
+    user: www-data
+    job: "cd /srv/production/maintenance; php ClearOldData.php 2>&1 > /tmp/dataclear.log; php OldRequestCleanup.php 2>&1 > /tmp/oldreq-cleanup.log; AutoFlagComments.php 2>&1 > /tmp/autoflag.log"
+    cron_file: waca-production
+
+- name: "Cron: Job queue"
+  ansible.builtin.cron:
+    name: Job queue
+    minute: "*"
+    user: www-data
+    job: "bash -l -c 'cd /srv/production/maintenance; php RunJobQueue.php > /tmp/jobqueue 2>&1'"
+    cron_file: waca-production
+
+- name: "Cron: graph update"
+  ansible.builtin.cron:
+    name: Graph update
+    minute: "*/5"
+    user: www-data
+    job: "/srv/dev/graph/update.sh > /tmp/graphupd.log 2>&1; /srv/dev/graph/graph.php > /tmp/graph.log 2>&1"
+    cron_file: waca-aux
+
+- name: "Cron: Report link refresh"
+  ansible.builtin.cron:
+    name: Report link refresh
+    hour: "11"
+    minute: "0"
+    user: www-data
+    job: "cd /srv/dev/r; ./refresh.sh > /srv/dev/report/latesturls.txt"
+    cron_file: waca-aux

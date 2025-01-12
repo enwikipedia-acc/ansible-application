@@ -3,6 +3,7 @@
   hosts: all
 
   vars:
+    app_version: rel7.14.1
     disktype: sd
     base_packages:
       - htop
@@ -69,40 +70,33 @@
         mode: '0644'
       notify: Restart apache2
 
-    - name: "Cron: nightly cleanup"
-      ansible.builtin.cron:
-        name: Nightly cleanup
-        minute: "0"
-        hour: "0"
-        user: www-data
-        job: "cd /srv/production/maintenance; php ClearOldData.php 2>&1 > /tmp/dataclear.log; php OldRequestCleanup.php 2>&1 > /tmp/oldreq-cleanup.log; AutoFlagComments.php 2>&1 > /tmp/autoflag.log"
-        cron_file: waca-production
-  
-    - name: "Cron: Job queue"
-      ansible.builtin.cron:
-        name: Job queue
-        minute: "*"
-        user: www-data
-        job: "bash -l -c 'cd /srv/production/maintenance; php RunJobQueue.php > /tmp/jobqueue 2>&1'"
-        cron_file: waca-production
+    - name: Enable RabbitMQ plugins
+      community.rabbitmq.rabbitmq_plugin:
+        names: rabbitmq_management,rabbitmq_shovel_management
+        state: enabled
 
-    - name: "Cron: graph update"
-      ansible.builtin.cron:
-        name: Graph update
-        minute: "*/5"
-        user: www-data
-        job: "/srv/dev/graph/update.sh > /tmp/graphupd.log 2>&1; /srv/dev/graph/graph.php > /tmp/graph.log 2>&1"
-        cron_file: waca-aux
+    # - name: Restore RabbitMQ configuration
 
-    - name: "Cron: Report link refresh"
-      ansible.builtin.cron:
-        name: Report link refresh
-        hour: "11"
-        minute: "0"
-        user: www-data
-        job: "cd /srv/dev/r; ./refresh.sh > /srv/dev/report/latesturls.txt"
-        cron_file: waca-aux
-    
+    - name: Git directory configuration
+      ansible.builtin.copy:
+        content: |
+          # MANAGED BY ANSIBLE
+          [safe]
+              directory = /srv/production
+              directory = /srv/dev/rc
+              directory = /srv/dev/demo
+        dest: /etc/gitconfig
+
+    - name: Install application
+      include_tasks: install-application.yml
+      loop:
+        - /srv/production
+        - /srv/dev/rc
+        - /srv/dev/demo
+
+    - name: Set up scheduled tasks
+      include_tasks: cron.yml
+
     - name: Prometheus configuration
       ansible.builtin.copy:
         content: |
@@ -125,16 +119,6 @@
               metrics_path: '/other/prometheus.php'
         dest: /etc/prometheus/prometheus.yml
       notify: Restart prometheus
-
-    - name: Git directory configuration
-      ansible.builtin.copy:
-        content: |
-          # MANAGED BY ANSIBLE
-          [safe]
-              directory = /srv/production
-              directory = /srv/dev/rc
-              directory = /srv/dev/demo
-        dest: /etc/gitconfig
 
     - name: Ensure Prometheus path is set correctly
       ansible.builtin.lineinfile:

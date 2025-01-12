@@ -1,0 +1,40 @@
+---
+- name: Application install - Git checkout
+  ansible.builtin.git:
+    repo: https://github.com/enwikipedia-acc/waca.git
+    dest: "{{item}}"
+    version: "{{app_version}}"
+    recursive: false
+    accept_hostkey: true
+    force: yes
+
+- name: Application install - folder permissions
+  ansible.builtin.file:
+    path: "{{item}}"
+    state: directory
+    mode: '2755'
+    owner: root
+    group: www-data
+
+- name: Application install - templates_c
+  ansible.builtin.file:
+    path: "{{item}}/templates_c"
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Application install - Install composer dependencies
+  ansible.builtin.shell: 
+    cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
+    chdir: "{{item}}/"
+
+- name: Application install - Install npm dependencies
+  ansible.builtin.shell: 
+    cmd: bash -l -c 'npm i'
+    chdir: "{{item}}/"
+
+- name: Application install - Regenerate stylesheets
+  ansible.builtin.shell: 
+    cmd: bash -l -c 'npm run build-scss'
+    chdir: "{{item}}/"
