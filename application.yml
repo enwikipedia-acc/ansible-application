@@ -3,7 +3,7 @@
   hosts: all
 
   vars:
-    app_version: rel7.14.1
+    app_version: pull/969/head
     disktype: sd
     base_packages:
       - htop
@@ -89,6 +89,8 @@
 
     - name: Install application
       include_tasks: install-application.yml
+      sudo: true
+      sudo_user: www-data
       loop:
         - /srv/production
         - /srv/dev/rc
