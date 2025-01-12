@@ -3,7 +3,7 @@
   hosts: all
 
   vars:
-    app_version: origin/pull/969/head
+    app_version: origin/refs/pull/969/head
     disktype: sd
     base_packages:
       - htop
