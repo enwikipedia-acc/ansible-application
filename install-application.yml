@@ -25,22 +25,25 @@
     group: www-data
 
 - name: Application install - Install composer dependencies
-  sudo: true
-  sudo_user: www-data
+  become: true
+  become_user: www-data
+  become_method: sudo
   ansible.builtin.shell:
     cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
     chdir: "{{item}}/"
 
 - name: Application install - Install npm dependencies
-  sudo: true
-  sudo_user: www-data
+  become: true
+  become_user: www-data
+  become_method: sudo
   ansible.builtin.shell: 
     cmd: bash -l -c 'npm i'
     chdir: "{{item}}/"
 
 - name: Application install - Regenerate stylesheets
-  sudo: true
-  sudo_user: www-data
+  become: true
+  become_user: www-data
+  become_method: sudo
   ansible.builtin.shell: 
     cmd: bash -l -c 'npm run build-scss'
     chdir: "{{item}}/"
