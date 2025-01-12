@@ -89,8 +89,6 @@
 
     - name: Install application
       include_tasks: install-application.yml
-      sudo: true
-      sudo_user: www-data
       loop:
         - /srv/production
         - /srv/dev/rc
