@@ -28,6 +28,16 @@
       - cron
   tasks:
 
+    - name: Retrieve configuration
+      ansible.builtin.git:
+        repo: git@github.com:stwalkerster/acc-aws-config.git
+        dest: /srv/config
+        version: main
+        recursive: false
+        accept_newhostkey: true
+        force: yes
+        key_file: /etc/config_deployment_key
+
     - name: Install packages
       apt:
         update_cache: yes

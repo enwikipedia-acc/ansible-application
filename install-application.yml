@@ -6,7 +6,7 @@
     refspec: "pull/969/head"
     version: "{{app_version}}"
     recursive: false
-    accept_hostkey: true
+    accept_newhostkey: true
     force: yes
 
 - name: Application install - folder permissions
