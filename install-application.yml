@@ -3,7 +3,7 @@
   ansible.builtin.git:
     repo: https://github.com/enwikipedia-acc/waca.git
     dest: "{{item}}"
-    refspec: "origin/pull/969/head"
+    refspec: "pull/969/head"
     version: "{{app_version}}"
     recursive: false
     accept_hostkey: true
