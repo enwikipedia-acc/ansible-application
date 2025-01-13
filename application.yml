@@ -87,7 +87,7 @@
               directory = /srv/dev/demo
         dest: /etc/gitconfig
 
-    - name: ww-data .npm folder
+    - name: www-data .npm folder
       ansible.builtin.file:
         path: /var/www/.npm
         state: directory
