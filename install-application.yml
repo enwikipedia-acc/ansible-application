@@ -25,6 +25,30 @@
     owner: www-data
     group: www-data
 
+- name: Application install - vendor directory
+  ansible.builtin.file:
+    path: "{{item}}/vendor"
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Application install - node_modules directory
+  ansible.builtin.file:
+    path: "{{item}}/node_modules"
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Application install - errorlog directory
+  ansible.builtin.file:
+    path: "{{item}}/errorlog"
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
 - name: Application install - Install composer dependencies
   become: true
   become_user: www-data
