@@ -3,7 +3,7 @@
   hosts: all
 
   vars:
-    app_version: pull/969/head
+    app_version: f7c5b0b95d443e8934e4ff7d04937fd77ca70001
     disktype: sd
     base_packages:
       - htop
