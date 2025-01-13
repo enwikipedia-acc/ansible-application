@@ -91,7 +91,6 @@
       ansible.builtin.file:
         path: /var/www/.npm
         state: absent
-        recurse: true
 
     - name: Install application
       include_tasks: install-application.yml
