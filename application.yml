@@ -87,10 +87,12 @@
               directory = /srv/dev/demo
         dest: /etc/gitconfig
 
-    - name: Purge old .npm folder
+    - name: ww-data .npm folder
       ansible.builtin.file:
         path: /var/www/.npm
-        state: absent
+        state: directory
+        owner: www-data
+        group: www-data
 
     - name: Install application
       include_tasks: install-application.yml
