@@ -41,6 +41,14 @@
     owner: www-data
     group: www-data
 
+- name: Application install - package-lock.json permissions
+  ansible.builtin.file:
+    path: "{{item}}/package-lock.json"
+    state: present
+    mode: '0644'
+    owner: www-data
+    group: www-data
+
 - name: Application install - errorlog directory
   ansible.builtin.file:
     path: "{{item}}/errorlog"
