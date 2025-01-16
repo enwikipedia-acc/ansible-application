@@ -125,6 +125,24 @@
         cmd: rabbitmqctl delete_user guest
       ignore_errors: true
 
+    - name: Deploy compliance
+      ansible.builtin.git:
+        repo: https://github.com/enwikipedia-acc/compliance.git
+        dest: /srv/compliance
+        version: main
+        recursive: false
+        accept_hostkey: true
+        force: yes
+
+    - name: Deploy XFF
+      ansible.builtin.git:
+        repo: https://github.com/wikimedia/mediawiki-extensions-TrustedXFF.git
+        dest: /srv/xff
+        version: master
+        recursive: false
+        accept_hostkey: true
+        force: yes
+
     - name: Git directory configuration
       ansible.builtin.copy:
         content: |
