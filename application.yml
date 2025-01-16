@@ -30,6 +30,9 @@
         force: yes
         key_file: /etc/config_deployment_key
 
+    # - name: Configuration key
+    #   shell: git config core.sshCommand 'ssh -i ~/.ssh/id_rsa'
+
     - name: Install packages
       apt:
         update_cache: yes
@@ -109,7 +112,13 @@
         names: rabbitmq_management,rabbitmq_shovel_management
         state: enabled
 
-    # - name: Restore RabbitMQ configuration
+    - name: Restore RabbitMQ configuration
+      ansible.builtin.shell:
+        cmd: rabbitmqctl import_definitions /srv/config/rabbit-config.json
+
+    - name: Remove RabbitMQ guest user
+      ansible.builtin.shell:
+        cmd: rabbitmqctl delete_user guest
 
     - name: Git directory configuration
       ansible.builtin.copy:
