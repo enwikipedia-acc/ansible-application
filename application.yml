@@ -30,8 +30,12 @@
         force: yes
         key_file: /etc/config_deployment_key
 
-    # - name: Configuration key
-    #   shell: git config core.sshCommand 'ssh -i ~/.ssh/id_rsa'
+    - name: Configuration key
+      community.general.git_config:
+        name: core.sshCommand
+        repo: /srv/config
+        scope: local
+        value: 'ssh -i /etc/config_deployment_key'
 
     - name: Install packages
       apt:
@@ -119,6 +123,7 @@
     - name: Remove RabbitMQ guest user
       ansible.builtin.shell:
         cmd: rabbitmqctl delete_user guest
+      ignore_errors: true
 
     - name: Git directory configuration
       ansible.builtin.copy:
