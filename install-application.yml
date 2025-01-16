@@ -1,13 +1,13 @@
 ---
-- name: Application install - root folder
+- name: Application install ({{item.path}}) - root folder
   ansible.builtin.file:
     path: "{{item.path}}"
     state: directory
-    mode: 2775
+    mode: '2775'
     owner: www-data
     group: www-data
 
-- name: Application install - Git checkout
+- name: Application install ({{item.path}}) - Git checkout
   become: true
   become_user: www-data
   become_method: sudo
@@ -20,7 +20,7 @@
     accept_hostkey: true
     force: yes
 
-# - name: Application install - folder permissions
+# - name: Application install ({{item.path}}) - folder permissions
 #   ansible.builtin.file:
 #     path: "{{item.path}}"
 #     state: directory
@@ -28,7 +28,7 @@
 #     owner: root
 #     group: www-data
 
-# - name: Application install - subfolder permissions
+# - name: Application install ({{item.path}}) - subfolder permissions
 #   ansible.builtin.file:
 #     path: "{{item.path}}/{{folder}}"
 #     state: directory
@@ -44,7 +44,7 @@
 #   loop_control:
 #     loop_var: folder
 
-# - name: Application install - file permissions
+# - name: Application install ({{item.path}}) - file permissions
 #   ansible.builtin.file:
 #     path: "{{item.path}}/{{file}}"
 #     state: file
@@ -56,7 +56,7 @@
 #   loop_control:
 #     loop_var: file
 
-- name: Application install - Install composer dependencies
+- name: Application install ({{item.path}}) - Install composer dependencies
   become: true
   become_user: www-data
   become_method: sudo
@@ -64,7 +64,7 @@
     cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
     chdir: "{{item.path}}/"
 
-- name: Application install - Install npm dependencies
+- name: Application install ({{item.path}}) - Install npm dependencies
   become: true
   become_user: www-data
   become_method: sudo
@@ -72,7 +72,7 @@
     cmd: bash -l -c 'npm i'
     chdir: "{{item.path}}/"
 
-- name: Application install - Regenerate stylesheets
+- name: Application install ({{item.path}}) - Regenerate stylesheets
   become: true
   become_user: www-data
   become_method: sudo
@@ -80,7 +80,7 @@
     cmd: bash -l -c 'npm run build-scss'
     chdir: "{{item.path}}/"
 
-- name: Application install - configuration
+- name: Application install ({{item.path}}) - configuration
   ansible.builtin.file:
     path: "{{item.path}}/config.local.inc.php"
     state: link
