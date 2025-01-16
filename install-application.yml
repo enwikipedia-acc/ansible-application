@@ -1,49 +1,60 @@
 ---
+- name: Application install - root folder
+  ansible.builtin.file:
+    path: "{{item.path}}"
+    state: directory
+    mode: 2775
+    owner: www-data
+    group: www-data
+
 - name: Application install - Git checkout
+  become: true
+  become_user: www-data
+  become_method: sudo
   ansible.builtin.git:
     repo: https://github.com/enwikipedia-acc/waca.git
-    dest: "{{item}}"
+    dest: "{{item.path}}"
     refspec: "pull/969/head"
     version: "{{app_version}}"
     recursive: false
     accept_hostkey: true
     force: yes
 
-- name: Application install - folder permissions
-  ansible.builtin.file:
-    path: "{{item}}"
-    state: directory
-    mode: '2755'
-    owner: root
-    group: www-data
+# - name: Application install - folder permissions
+#   ansible.builtin.file:
+#     path: "{{item.path}}"
+#     state: directory
+#     mode: '2755'
+#     owner: root
+#     group: www-data
 
-- name: Application install - subfolder permissions
-  ansible.builtin.file:
-    path: "{{item}}/{{folder}}"
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
-  loop:
-    - templates_c
-    - vendor
-    - node_modules
-    - errorlog
-    - resources/generated
-  loop_control:
-    loop_var: folder
+# - name: Application install - subfolder permissions
+#   ansible.builtin.file:
+#     path: "{{item.path}}/{{folder}}"
+#     state: directory
+#     mode: '0755'
+#     owner: www-data
+#     group: www-data
+#   loop:
+#     - templates_c
+#     - vendor
+#     - node_modules
+#     - errorlog
+#     - resources/generated
+#   loop_control:
+#     loop_var: folder
 
-- name: Application install - file permissions
-  ansible.builtin.file:
-    path: "{{item}}/{{file}}"
-    state: file
-    mode: '0644'
-    owner: www-data
-    group: www-data
-  loop:
-    - package-lock.json
-  loop_control:
-    loop_var: file
+# - name: Application install - file permissions
+#   ansible.builtin.file:
+#     path: "{{item.path}}/{{file}}"
+#     state: file
+#     mode: '0644'
+#     owner: www-data
+#     group: www-data
+#   loop:
+#     - package-lock.json
+#   loop_control:
+#     loop_var: file
 
 - name: Application install - Install composer dependencies
   become: true
@@ -51,7 +62,7 @@
   become_method: sudo
   ansible.builtin.shell:
     cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
-    chdir: "{{item}}/"
+    chdir: "{{item.path}}/"
 
 - name: Application install - Install npm dependencies
   become: true
@@ -59,7 +70,7 @@
   become_method: sudo
   ansible.builtin.shell: 
     cmd: bash -l -c 'npm i'
-    chdir: "{{item}}/"
+    chdir: "{{item.path}}/"
 
 - name: Application install - Regenerate stylesheets
   become: true
@@ -67,4 +78,10 @@
   become_method: sudo
   ansible.builtin.shell: 
     cmd: bash -l -c 'npm run build-scss'
-    chdir: "{{item}}/"
+    chdir: "{{item.path}}/"
+
+- name: Application install - configuration
+  ansible.builtin.file:
+    path: "{{item.path}}/config.local.inc.php"
+    state: link
+    src: "{{item.config}}"

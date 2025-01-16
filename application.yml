@@ -107,27 +107,12 @@
     - name: Install application
       include_tasks: install-application.yml
       loop:
-        - /srv/production
-        - /srv/dev/rc
-        - /srv/dev/demo
-
-    - name: Configure production application
-      ansible.builtin.file:
-        path: /srv/production/config.local.inc.php
-        state: link
-        src: /srv/config/application-production.php
-
-    - name: Configure rc application
-      ansible.builtin.file:
-        path: /srv/dev/rc/config.local.inc.php
-        state: link
-        src: /srv/config/application-dev-rc.php
-
-    - name: Configure demo application
-      ansible.builtin.file:
-        path: /srv/dev/demo/config.local.inc.php
-        state: link
-        src: /srv/config/application-dev-demo.php
+        - path: /srv/production
+          config: /srv/config/application-production.php
+        - path: /srv/dev/rc
+          config: /srv/config/application-dev-rc.php
+        - path: /srv/dev/demo
+          config: /srv/config/application-dev-demo.php
 
     - name: Set up scheduled tasks
       include_tasks: cron.yml
