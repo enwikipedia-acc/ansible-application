@@ -11,19 +11,11 @@
       - bind9-utils
       - dnsutils
       - apache2
-      # - libapache2-mod-php8.2
-      # - php8.2-cli
-      # - php8.2-curl
-      # - php8.2-gd
-      # - php8.2-mbstring
-      # - php8.2-mysql
-      # - php8.2-xml
       - composer
       - prometheus
       - python3-pymysql
       - mariadb-client
       - rrdtool
-      - npm
       - rabbitmq-server
       - cron
   tasks:
@@ -43,7 +35,39 @@
         update_cache: yes
         name: "{{ base_packages }}"
       notify: Restart apache2
+
+    - name: Install bullseye packages
+      apt:
+        update_cache: yes
+        name: '{{item}}'
+      notify: Restart apache2
+      loop:
+      - libapache2-mod-php7.4
+      - php7.4-cli
+      - php7.4-curl
+      - php7.4-gd
+      - php7.4-mbstring
+      - php7.4-mysql
+      - php7.4-xml
+      - nodejs
+      when: ansible_facts['distribution_release'] == "bullseye"
     
+    - name: Install bookworm packages
+      apt:
+        update_cache: yes
+        name: '{{item}}'
+      notify: Restart apache2
+      loop:
+      - libapache2-mod-php8.2
+      - php8.2-cli
+      - php8.2-curl
+      - php8.2-gd
+      - php8.2-mbstring
+      - php8.2-mysql
+      - php8.2-xml
+      - npm
+      when: ansible_facts['distribution_release'] == "bookworm"
+
 
     - name: Enable the Apache2 modules
       community.general.apache2_module:
