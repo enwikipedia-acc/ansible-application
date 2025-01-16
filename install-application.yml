@@ -6,7 +6,7 @@
     refspec: "pull/969/head"
     version: "{{app_version}}"
     recursive: false
-    accept_newhostkey: true
+    accept_hostkey: true
     force: yes
 
 - name: Application install - folder permissions
@@ -17,53 +17,33 @@
     owner: root
     group: www-data
 
-- name: Application install - templates_c
+- name: Application install - subfolder permissions
   ansible.builtin.file:
-    path: "{{item}}/templates_c"
+    path: "{{item}}/{{folder}}"
     state: directory
     mode: '0755'
     owner: www-data
     group: www-data
+  loop:
+    - templates_c
+    - vendor
+    - node_modules
+    - errorlog
+    - resources/generated
+  loop_control:
+    loop_var: folder
 
-- name: Application install - vendor directory
+- name: Application install - file permissions
   ansible.builtin.file:
-    path: "{{item}}/vendor"
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
-
-- name: Application install - node_modules directory
-  ansible.builtin.file:
-    path: "{{item}}/node_modules"
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
-
-- name: Application install - package-lock.json permissions
-  ansible.builtin.file:
-    path: "{{item}}/package-lock.json"
+    path: "{{item}}/{{file}}"
     state: file
     mode: '0644'
     owner: www-data
     group: www-data
-
-- name: Application install - errorlog directory
-  ansible.builtin.file:
-    path: "{{item}}/errorlog"
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
-
-- name: Application install - resources directory
-  ansible.builtin.file:
-    path: "{{item}}/resources/generated"
-    state: directory
-    mode: '0755'
-    owner: www-data
-    group: www-data
+  loop:
+    - package-lock.json
+  loop_control:
+    loop_var: file
 
 - name: Application install - Install composer dependencies
   become: true

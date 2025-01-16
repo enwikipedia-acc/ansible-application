@@ -3,7 +3,7 @@
   hosts: all
 
   vars:
-    app_version: f7c5b0b95d443e8934e4ff7d04937fd77ca70001
+    app_version: master # f7c5b0b95d443e8934e4ff7d04937fd77ca70001
     disktype: sd
     base_packages:
       - htop
@@ -11,13 +11,13 @@
       - bind9-utils
       - dnsutils
       - apache2
-      - libapache2-mod-php8.2
-      - php8.2-cli
-      - php8.2-curl
-      - php8.2-gd
-      - php8.2-mbstring
-      - php8.2-mysql
-      - php8.2-xml
+      # - libapache2-mod-php8.2
+      # - php8.2-cli
+      # - php8.2-curl
+      # - php8.2-gd
+      # - php8.2-mbstring
+      # - php8.2-mysql
+      # - php8.2-xml
       - composer
       - prometheus
       - python3-pymysql
@@ -34,7 +34,7 @@
         dest: /srv/config
         version: main
         recursive: false
-        accept_newhostkey: true
+        accept_hostkey: true
         force: yes
         key_file: /etc/config_deployment_key
 
@@ -110,6 +110,24 @@
         - /srv/production
         - /srv/dev/rc
         - /srv/dev/demo
+
+    - name: Configure production application
+      ansible.builtin.file:
+        path: /srv/production/config.local.inc.php
+        state: link
+        src: /srv/config/application-production.php
+
+    - name: Configure rc application
+      ansible.builtin.file:
+        path: /srv/dev/rc/config.local.inc.php
+        state: link
+        src: /srv/config/application-dev-rc.php
+
+    - name: Configure demo application
+      ansible.builtin.file:
+        path: /srv/dev/demo/config.local.inc.php
+        state: link
+        src: /srv/config/application-dev-demo.php
 
     - name: Set up scheduled tasks
       include_tasks: cron.yml
