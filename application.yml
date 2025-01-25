@@ -202,6 +202,37 @@
         regexp: '^ARGS="'
         line: 'ARGS="--web.external-url=http://localhost:9090/prometheus --storage.tsdb.retention.time=365d "'
       notify: Restart prometheus
+
+    - name: Graphs
+      become: true
+      become_user: www-data
+      become_method: sudo
+      ansible.builtin.git:
+        repo: https://github.com/enwikipedia-acc/rrdtool.git
+        dest: "/srv/dev/graph"
+        version: "master"
+        recursive: false
+        accept_hostkey: true
+        force: yes
+
+    - name: Deployment script
+      become: true
+      become_user: www-data
+      become_method: sudo
+      ansible.builtin.git:
+        repo: http://github.com/enwikipedia-acc/deploy
+        dest: "/srv/dev/deploy"
+        version: "master"
+        recursive: false
+        accept_hostkey: true
+        force: yes
+    - name: Deployment script configuration
+      ansible.builtin.file:
+        path: "/srv/dev/deploy/config.inc.php"
+        state: link
+        src: "/srv/config/deployment.php"
+
+
   handlers:
     - name: Restart apache2
       service:

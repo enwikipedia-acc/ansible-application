@@ -20,42 +20,6 @@
     accept_hostkey: true
     force: yes
 
-# - name: Application install ({{item.path}}) - folder permissions
-#   ansible.builtin.file:
-#     path: "{{item.path}}"
-#     state: directory
-#     mode: '2755'
-#     owner: root
-#     group: www-data
-
-# - name: Application install ({{item.path}}) - subfolder permissions
-#   ansible.builtin.file:
-#     path: "{{item.path}}/{{folder}}"
-#     state: directory
-#     mode: '0755'
-#     owner: www-data
-#     group: www-data
-#   loop:
-#     - templates_c
-#     - vendor
-#     - node_modules
-#     - errorlog
-#     - resources/generated
-#   loop_control:
-#     loop_var: folder
-
-# - name: Application install ({{item.path}}) - file permissions
-#   ansible.builtin.file:
-#     path: "{{item.path}}/{{file}}"
-#     state: file
-#     mode: '0644'
-#     owner: www-data
-#     group: www-data
-#   loop:
-#     - package-lock.json
-#   loop_control:
-#     loop_var: file
-
 - name: Application install ({{item.path}}) - Install composer dependencies
   become: true
   become_user: www-data
