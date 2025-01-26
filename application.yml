@@ -232,6 +232,22 @@
         state: link
         src: "/srv/config/deployment.php"
 
+    - name: Reporting script
+      become: true
+      become_user: www-data
+      become_method: sudo
+      ansible.builtin.git:
+        repo: http://github.com/enwikipedia-acc/reporting
+        dest: "/srv/dev/report"
+        version: "main"
+        recursive: false
+        accept_hostkey: true
+        force: yes
+    - name: Reporting script configuration
+      ansible.builtin.file:
+        path: "/srv/dev/report/config.php"
+        state: link
+        src: "/srv/config/reporting.php"
 
   handlers:
     - name: Restart apache2
