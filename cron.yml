@@ -23,12 +23,3 @@
     user: www-data
     job: "/srv/dev/graph/update.sh > /tmp/graphupd.log 2>&1; /srv/dev/graph/graph.php > /tmp/graph.log 2>&1"
     cron_file: waca-aux
-
-- name: "Cron: Report link refresh"
-  ansible.builtin.cron:
-    name: Report link refresh
-    hour: "11"
-    minute: "0"
-    user: www-data
-    job: "cd /srv/dev/r; ./refresh.sh > /srv/dev/report/latesturls.txt"
-    cron_file: waca-aux
