@@ -22,7 +22,7 @@
 
     - name: Retrieve configuration
       ansible.builtin.git:
-        repo: git@github.com:stwalkerster/acc-aws-config.git
+        repo: git@github.com:enwikipedia-acc/configuration.git
         dest: /srv/config
         version: main
         recursive: false
@@ -226,6 +226,7 @@
         recursive: false
         accept_hostkey: true
         force: yes
+
     - name: Deployment script configuration
       ansible.builtin.file:
         path: "/srv/dev/deploy/config.inc.php"
@@ -243,11 +244,20 @@
         recursive: false
         accept_hostkey: true
         force: yes
+
     - name: Reporting script configuration
       ansible.builtin.file:
         path: "/srv/dev/report/config.php"
         state: link
         src: "/srv/config/reporting.php"
+
+    - name: Reporting script - Install composer dependencies
+      become: true
+      become_user: www-data
+      become_method: sudo
+      ansible.builtin.shell:
+        cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
+        chdir: "/srv/dev/report/"
 
   handlers:
     - name: Restart apache2
