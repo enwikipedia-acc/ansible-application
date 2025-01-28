@@ -40,12 +40,14 @@
     - name: Install packages
       apt:
         update_cache: yes
+        lock_timeout: 300
         name: "{{ base_packages }}"
       notify: Restart apache2
 
     - name: Install bullseye packages
       apt:
         update_cache: yes
+        lock_timeout: 300
         name: '{{item}}'
       notify: Restart apache2
       loop:
@@ -62,6 +64,7 @@
     - name: Install bookworm packages
       apt:
         update_cache: yes
+        lock_timeout: 300
         name: '{{item}}'
       notify: Restart apache2
       loop:
