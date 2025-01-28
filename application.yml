@@ -176,6 +176,16 @@
     - name: Set up scheduled tasks
       include_tasks: cron.yml
 
+
+
+    - name: /etc/prometheus folder
+      ansible.builtin.file:
+        path: /etc/prometheus
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
     - name: Prometheus configuration
       ansible.builtin.copy:
         content: |
