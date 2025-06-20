@@ -216,7 +216,7 @@
         group: root
         mode: '0644'
         content: |
-          ARGS="--web.external-url=http://localhost:9090/prometheus --storage.tsdb.retention.time=365d "
+          ARGS="--web.external-url=http://localhost:9090/prometheus --storage.tsdb.retention.time=1460d "
       notify: Restart prometheus
 
     - name: Graphs
