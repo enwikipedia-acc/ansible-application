@@ -67,7 +67,7 @@
         - php7.4-mbstring
         - php7.4-mysql
         - php7.4-xml
-        - nodejs
+        # - nodejs  # This has to come from the nodesource repository.
       when: ansible_facts['distribution_release'] == "bullseye"
 
     - name: Install bookworm packages
