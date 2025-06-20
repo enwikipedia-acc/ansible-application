@@ -1,51 +1,51 @@
 ---
-- name: Application install ({{item.path}}) - root folder
+- name: Application install - root folder - {{ item.path }}
   ansible.builtin.file:
-    path: "{{item.path}}"
+    path: "{{ item.path }}"
     state: directory
     mode: '2775'
     owner: www-data
     group: www-data
 
-- name: Application install ({{item.path}}) - Git checkout
+- name: Application install - Git checkout - {{ item.path }}
   become: true
   become_user: www-data
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   ansible.builtin.git:
     repo: https://github.com/enwikipedia-acc/waca.git
-    dest: "{{item.path}}"
+    dest: "{{ item.path }}"
     refspec: "pull/969/head"
     version: "{{app_version}}"
     recursive: false
     accept_hostkey: true
-    force: yes
+    force: true
 
-- name: Application install ({{item.path}}) - Install composer dependencies
+- name: Application install - Install composer dependencies - {{ item.path }}
   become: true
   become_user: www-data
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   ansible.builtin.shell:
     cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
-    chdir: "{{item.path}}/"
+    chdir: "{{ item.path }}/"
 
-- name: Application install ({{item.path}}) - Install npm dependencies
+- name: Application install - Install npm dependencies - {{ item.path }}
   become: true
   become_user: www-data
-  become_method: sudo
-  ansible.builtin.shell: 
+  become_method: ansible.builtin.sudo
+  ansible.builtin.shell:
     cmd: bash -l -c 'npm i'
-    chdir: "{{item.path}}/"
+    chdir: "{{ item.path }}/"
 
-- name: Application install ({{item.path}}) - Regenerate stylesheets
+- name: Application install - Regenerate stylesheets - {{ item.path }}
   become: true
   become_user: www-data
-  become_method: sudo
-  ansible.builtin.shell: 
+  become_method: ansible.builtin.sudo
+  ansible.builtin.shell:
     cmd: bash -l -c 'npm run build-scss'
-    chdir: "{{item.path}}/"
+    chdir: "{{ item.path }}/"
 
-- name: Application install ({{item.path}}) - configuration
+- name: Application install - configuration - {{ item.path }}
   ansible.builtin.file:
-    path: "{{item.path}}/config.local.inc.php"
+    path: "{{ item.path }}/config.local.inc.php"
     state: link
-    src: "{{item.config}}"
+    src: "{{ item.config }}"

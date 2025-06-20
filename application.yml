@@ -27,7 +27,7 @@
         version: main
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
         key_file: /etc/config_deployment_key
 
     - name: Configuration key
@@ -38,44 +38,44 @@
         value: 'ssh -i /etc/config_deployment_key'
 
     - name: Install packages
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         lock_timeout: 300
         name: "{{ base_packages }}"
       notify: Restart apache2
 
     - name: Install bullseye packages
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         lock_timeout: 300
-        name: '{{item}}'
+        name: '{{ item }}'
       notify: Restart apache2
       loop:
-      - libapache2-mod-php7.4
-      - php7.4-cli
-      - php7.4-curl
-      - php7.4-gd
-      - php7.4-mbstring
-      - php7.4-mysql
-      - php7.4-xml
-      - nodejs
+        - libapache2-mod-php7.4
+        - php7.4-cli
+        - php7.4-curl
+        - php7.4-gd
+        - php7.4-mbstring
+        - php7.4-mysql
+        - php7.4-xml
+        - nodejs
       when: ansible_facts['distribution_release'] == "bullseye"
-    
+
     - name: Install bookworm packages
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         lock_timeout: 300
-        name: '{{item}}'
+        name: '{{ item }}'
       notify: Restart apache2
       loop:
-      - libapache2-mod-php8.2
-      - php8.2-cli
-      - php8.2-curl
-      - php8.2-gd
-      - php8.2-mbstring
-      - php8.2-mysql
-      - php8.2-xml
-      - npm
+        - libapache2-mod-php8.2
+        - php8.2-cli
+        - php8.2-curl
+        - php8.2-gd
+        - php8.2-mbstring
+        - php8.2-mysql
+        - php8.2-xml
+        - npm
       when: ansible_facts['distribution_release'] == "bookworm"
 
 
@@ -135,7 +135,7 @@
         version: main
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
 
     - name: Deploy XFF
       ansible.builtin.git:
@@ -144,7 +144,7 @@
         version: master
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
 
     - name: Git directory configuration
       ansible.builtin.copy:
@@ -155,16 +155,20 @@
               directory = /srv/dev/rc
               directory = /srv/dev/demo
         dest: /etc/gitconfig
+        owner: root
+        group: root
+        mode: '0644'
 
-    - name: www-data .npm folder
+    - name: Create www-data .npm folder
       ansible.builtin.file:
         path: /var/www/.npm
         state: directory
         owner: www-data
         group: www-data
+        mode: '0755'
 
     - name: Install application
-      include_tasks: install-application.yml
+      ansible.builtin.include_tasks: install-application.yml
       loop:
         - path: /srv/production
           config: /srv/config/application-production.php
@@ -174,9 +178,7 @@
           config: /srv/config/application-dev-demo.php
 
     - name: Set up scheduled tasks
-      include_tasks: cron.yml
-
-
+      ansible.builtin.include_tasks: cron.yml
 
     - name: /etc/prometheus folder
       ansible.builtin.file:
@@ -207,6 +209,9 @@
                 - targets: ['accounts-dev.wmflabs.org']
               metrics_path: '/other/prometheus.php'
         dest: /etc/prometheus/prometheus.yml
+        owner: root
+        group: root
+        mode: '0644'
       notify: Restart prometheus
 
     - name: Ensure Prometheus path is set correctly
@@ -222,26 +227,26 @@
     - name: Graphs
       become: true
       become_user: www-data
-      become_method: sudo
+      become_method: ansible.builtin.sudo
       ansible.builtin.git:
         repo: https://github.com/enwikipedia-acc/rrdtool.git
         dest: "/srv/dev/graph"
         version: "master"
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
 
     - name: Deployment script
       become: true
       become_user: www-data
-      become_method: sudo
+      become_method: ansible.builtin.sudo
       ansible.builtin.git:
         repo: http://github.com/enwikipedia-acc/deploy
         dest: "/srv/dev/deploy"
         version: "master"
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
 
     - name: Deployment script configuration
       ansible.builtin.file:
@@ -252,14 +257,14 @@
     - name: Reporting script
       become: true
       become_user: www-data
-      become_method: sudo
+      become_method: ansible.builtin.sudo
       ansible.builtin.git:
         repo: http://github.com/enwikipedia-acc/reporting
         dest: "/srv/dev/report"
         version: "main"
         recursive: false
         accept_hostkey: true
-        force: yes
+        force: true
 
     - name: Reporting script configuration
       ansible.builtin.file:
@@ -270,18 +275,18 @@
     - name: Reporting script - Install composer dependencies
       become: true
       become_user: www-data
-      become_method: sudo
+      become_method: ansible.builtin.sudo
       ansible.builtin.shell:
         cmd: bash -l -c 'export COMPOSER_HOME=/tmp; composer install'
         chdir: "/srv/dev/report/"
 
   handlers:
     - name: Restart apache2
-      service:
+      ansible.builtin.service:
         name: apache2
         state: restarted
 
     - name: Restart prometheus
-      service:
+      ansible.builtin.service:
         name: prometheus
         state: restarted
