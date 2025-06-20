@@ -37,6 +37,15 @@
         scope: local
         value: 'ssh -i /etc/config_deployment_key'
 
+    - name: Setup sudoers for www-data
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/wwwdata
+        owner: root
+        group: root
+        mode: '0440'
+        content: |
+          %project-account-creation-assistance ALL = (www-data) NOPASSWD: ALL
+
     - name: Install packages
       ansible.builtin.apt:
         update_cache: true
