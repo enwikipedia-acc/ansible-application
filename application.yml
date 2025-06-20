@@ -177,6 +177,23 @@
         - path: /srv/dev/demo
           config: /srv/config/application-dev-demo.php
 
+    - name: /srv/dev/other folder
+      ansible.builtin.file:
+        path: /srv/dev/other
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Create hardlink for nocheck.html
+      ansible.builtin.file:
+        src: /srv/config/archive/nocheck-vuln-report.html
+        dest: /srv/dev/other/nocheck-vuln-report.html
+        state: hard
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
     - name: Set up scheduled tasks
       ansible.builtin.include_tasks: cron.yml
 
