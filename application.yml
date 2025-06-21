@@ -186,6 +186,16 @@
         - path: /srv/dev/demo
           config: /srv/config/application-dev-demo.php
 
+    - name: Add acc.php redirect
+      ansible.builtin.copy:
+        content: |
+          <?php
+          header('Location: internal.php');
+        dest: /srv/production/acc.php
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
     - name: /srv/dev/other folder
       ansible.builtin.file:
         path: /srv/dev/other
