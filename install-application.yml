@@ -15,7 +15,7 @@
     repo: https://github.com/enwikipedia-acc/waca.git
     dest: "{{ item.path }}"
     refspec: "pull/969/head"
-    version: "{{app_version}}"
+    version: "{{ app_version }}"
     recursive: false
     accept_hostkey: true
     force: true
