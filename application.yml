@@ -290,6 +290,14 @@
         state: link
         src: "/srv/config/deployment.php"
 
+    - name: Deployment script logs folder
+      ansible.builtin.file:
+        path: "/srv/dev/deploy/logs"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
     - name: Reporting script
       become: true
       become_user: www-data
